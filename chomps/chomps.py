@@ -18,6 +18,10 @@ from slackclient import SlackClient
 from lib import HandlerRegistry
 
 
+EEN_SLACK_API_KEY= 'xoxb-56033804049-sEA5bOB8tqNTbcKrnynwqAF9'
+
+EEN_SLACKBOT_ID= 'U1N0ZPN1F'
+
 logging.config.dictConfig(settings.LOGGING)
 
 ################################################################################
@@ -29,10 +33,10 @@ logging.config.dictConfig(settings.LOGGING)
 BOT_NAME = settings.SLACK_BOT_NAME
 
 # Bot ID         **Note: do not publish this (we advise making this an ENV and populating this with os.environ.get(<ENV_NAME>, "")
-BOT_ID = settings.SLACK_BOT_ID
+BOT_ID = "U1N0ZPN1F"
 
 # Bot API Token  **Note: do not publish this (we advise making this an ENV and populating this with os.environ.get(<ENV_NAME>, "")
-SLACK_BOT_TOKEN = settings.SLACK_BOT_TOKEN
+SLACK_BOT_TOKEN = "xoxb-56033804049-sEA5bOB8tqNTbcKrnynwqAF9"
 
 slack_client = SlackClient(SLACK_BOT_TOKEN)
 
@@ -40,7 +44,7 @@ READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
 
 # Load the plugins
 pwd = os.path.dirname(os.path.abspath(__file__))
-plugin_dir = os.path.join(pwd, "een_handlers")
+plugin_dir = os.path.join(pwd, "handlers")
 handlers = HandlerRegistry([plugin_dir], slack_client, BOT_NAME, BOT_ID)
 handlers.load_plugins()
 

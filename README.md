@@ -9,17 +9,13 @@
 3. Install pip
 4. Get this code
 5. Create and enter your virtualenv `virtualenv slack` then `. ./slack/bin/activate`
-6. Run `pip install -r requirements.txt`
+6. Run `pip2 install -r requirements.txt`
 7. Get a Slack API key (For EEN people I have a Slack account StashPop set up - get the key from me)
 8. Put the key in the `chomps.py` file
-9. Run `python chomps/chomps.py`
+9. Run `python2.7 chomps/chomps.py`
 10. Type `chomps marco` in a Slack channel with Chomps invited.
  
 ### To Develop
 
 Work in the handlers/my_handler.py file to experiment with sending messages to a channel on command.
-
-
-
-
 
