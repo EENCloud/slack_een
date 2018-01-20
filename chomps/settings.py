@@ -21,6 +21,7 @@ CUSTOM_MODEL = os.environ.get('CUSTOM_MODEL')
 CUSTOM_MODEL = None
 SHOW_TAGS = os.environ.get('SHOW_TAGS') == 'True'
 
+HANDLER_DIR = os.environ.get('PLUGIN_DIR', 'handlers')
 
 
 __LOG_FORMAT = os.environ.get('EEN_LOG_FORMAT', '%(asctime)s.%(msecs).03d[%(levelname)0.3s] %(name)s:%(funcName)s.%(lineno)d %(message)s')

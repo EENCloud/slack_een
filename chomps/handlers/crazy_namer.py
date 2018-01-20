@@ -45,7 +45,7 @@ def execute_script(script):
     return default
 
 
-##### This is where the part starts - The BotHandler ####
+# ---- This is where the party starts - The BotHandler -----
 # Essentially you are defining what you trigger on and the method to generate the
 # response
 
@@ -69,7 +69,6 @@ class NameIt(ChompsHandler):
         return execute_script(script)
         
     def process_message(self, match, msg):
-        command = match.groups()[0] if match.groups()[0] else None
         entity = match.groups()[1] if match.groups()[1] else 'random'
         return "*{}* _ (www.crazynamer.com)_".format(self.get_name(entity))
 
