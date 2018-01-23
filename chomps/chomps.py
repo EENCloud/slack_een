@@ -44,9 +44,45 @@ plugin_dir = os.path.join(pwd, settings.HANDLER_DIR)
 handlers = HandlerRegistry([plugin_dir], slack_client, BOT_NAME, BOT_ID)
 handlers.load_plugins()
 
+#empty dict that will fill as a message for muzzle or speak is recieved
+muzzles= {}
 
 def simple_response(response, channel):
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
+
+
+def muzzle_handler(msg, text):
+    
+    trigger = re.compile('(?:[Cc]homps) ([Mm]uzzle|[Ss]peak|[Oo]n|[Oo]ff)\Z')
+    result= trigger.match(text)
+    #  ^ checks the regex expression for a match, returns none if not found
+    channel=msg.get('channel')
+    #  ^ pulls out the unique channel name as string
+    muzzles.setdefault(channel, False)
+    if result != None:
+        command= result.groups()[0].lower() 
+        if command == "muzzle" or command == "off":
+            muzzles[channel] = True
+            # ^ defines the channel name where the command was recieved as true if muzzled or silent
+            print("chomps is silent")
+            response = "Quiet Time!"
+            simple_response(response, msg['channel'])
+        elif command == "speak" or command == "on":
+            muzzles[channel] = False
+            # ^ defines the channel name where the command was recieved as false if speaking
+            print("chomps is loud")
+            response = "Chomps is loose!"
+            simple_response(response, msg['channel'])
+        return muzzles[channel]
+
+def is_muzzled(msg):
+    channel = msg.get('channel')
+    if muzzles[channel]:
+        print("quiet time")
+        return False
+    else:
+        return True
+
 
 
 if __name__ == "__main__":
@@ -64,19 +100,21 @@ if __name__ == "__main__":
                                 continue
 
                             text = msg.get('text', '')
-                            if text:
-                                print "CHANNEL: {} => Message: {}".format(msg['channel'], text.encode('ascii', 'ignore'))
-                                for handler in handlers:
-                                    count = 0
-                                    for match in handler.pattern.finditer(text):
-                                        count += 1
-                                        if count <= handler.call_limit:
-                                            #gevent.spawn(handle, handler, match, msg)
-                                            response = handler.process_message(match, msg)
-                                            if response:
-                                                simple_response(response, msg['channel'])
-                                        else:
-                                            break
+                            muzzle_handler(msg,text)
+                            if is_muzzled(msg):
+                                if text:
+                                    print "CHANNEL: {} => Message: {}".format(msg['channel'], text.encode('ascii', 'ignore'))
+                                    for handler in handlers:
+                                        count = 0
+                                        for match in handler.pattern.finditer(text):
+                                            count += 1
+                                            if count <= handler.call_limit:
+                                                #gevent.spawn(handle, handler, match, msg)
+                                                response = handler.process_message(match, msg)
+                                                if response:
+                                                    simple_response(response, msg['channel'])
+                                            else:
+                                                break
 
                     except Exception as e:
                         print("Error {} {}".format(type(e), e.message))
