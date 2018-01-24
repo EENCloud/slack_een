@@ -18,7 +18,7 @@ coins = {}
 
 CACHE_EXPIRATION= 2
 
-last_check = datetime.now()-timedelta(minutes=2)
+last_check = datetime.now()-timedelta(minutes=CACHE_EXPIRATION)
 
 def trend(percent):
     if float(percent) < 0:
