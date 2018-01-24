@@ -61,24 +61,13 @@ class MyHandler(ChompsHandler):
             global coins, last_check
             last_check = datetime.now()
             coins = get_new_data()
-            coin = search_coins(term)
-            holder = trend(coin["percent_change_1h"])
-            holder_two = trend(coin["percent_change_24h"])
-            holder_three = trend(coin["percent_change_7d"])
-            return ((">>>*Currency*: %s \n" % coin["name"])+
-                ("$ %s \n" % coin["price_usd"]) +
-                ("%s *%s%%* _1hr_ " % (holder,coin["percent_change_1h"]))+
-                (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
-                (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))
-        else:
-            coin= search_coins(term)
-            holder = trend(coin["percent_change_1h"])
-            holder_two = trend(coin["percent_change_24h"])
-            holder_three = trend(coin["percent_change_7d"])
-            return ((">>>*Currency*: %s \n" % coin["name"])+
-                ("$ %s \n" % coin["price_usd"]) +
-                ("%s *%s%%* _1hr_ " % (holder,coin["percent_change_1h"]))+
-                (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
-                (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))
-
+        coin = search_coins(term)
+        holder = trend(coin["percent_change_1h"])
+        holder_two = trend(coin["percent_change_24h"])
+        holder_three = trend(coin["percent_change_7d"])
+        return ((">>>*Currency*: %s \n" % coin["name"])+
+            ("$ %s \n" % coin["price_usd"]) +
+            ("%s *%s%%* _1hr_ " % (holder,coin["percent_change_1h"]))+
+            (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
+            (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))3
 
