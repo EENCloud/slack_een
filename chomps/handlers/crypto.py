@@ -18,7 +18,7 @@ coins = {}
 
 CACHE_EXPIRATION= 2
 
-last_check = datetime.now()
+last_check = datetime.now()-timedelta(minutes=2)
 
 def trend(percent):
     if float(percent) < 0:
@@ -31,7 +31,7 @@ def time_check(last_check):
     this_check = datetime.now()
     data_age = (this_check - last_check).seconds / 60  # Age of data in minutes
     pprint(data_age)
-    return data_age < CACHE_EXPIRATION
+    return data_age >= CACHE_EXPIRATION
 
 def get_new_data():
     url= "https://api.coinmarketcap.com/v1/ticker/" 
@@ -45,7 +45,7 @@ def search_coins(term):
         for key in keys_to_check:
             if coin.get(key, "").lower() == term.lower():
                 return coin
-    return coin # returns the last one
+    return coins # returns the last one
 
 
 
@@ -58,6 +58,7 @@ class MyHandler(ChompsHandler):
     def process_message(self, match, msg):
         term = match.groups()[0]
         if time_check(last_check):
+            pprint("new coin")
             global coins, last_check
             last_check = datetime.now()
             coins = get_new_data()
@@ -71,6 +72,7 @@ class MyHandler(ChompsHandler):
                 (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
                 (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))
         else:
+            pprint("old coin")
             coin= search_coins(term)
             holder = trend(coin["percent_change_1h"])
             holder_two = trend(coin["percent_change_24h"])
