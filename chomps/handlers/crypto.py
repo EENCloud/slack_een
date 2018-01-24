@@ -15,13 +15,13 @@ trigger = re.compile('(?:[Cc]homps) [Cc]rypto ([0-9a-zA-Z]*)')
 
 coins = {}
 
-coin= {}
 
+CACHE_EXPIRATION= 2
 
-last_check = datetime.now()-timedelta(minutes=2)
+last_check = datetime.now()
 
 def trend(percent):
-    if percent.find("-") != -1:
+    if float(percent) < 0:
         pic = ":chart_with_downwards_trend:"
     else: 
         pic = ":chart_with_upwards_trend:"
@@ -29,42 +29,23 @@ def trend(percent):
 
 def time_check(last_check):
     this_check = datetime.now()
-    pprint("this time")
-    pprint(this_check.minute)
-    pprint("Last time")
-    pprint(last_check.minute)
-    if int(this_check.minute) - int(last_check.minute) >= 2 or int(this_check.minute) == 0  :
-        last_check = datetime.now()
-        # pprint("last check now")
-        # pprint(last_check)
-        return True
-    else:
-        return False
+    data_age = (this_check - last_check).seconds / 60  # Age of data in minutes
+    pprint(data_age)
+    return data_age < CACHE_EXPIRATION
 
 def get_new_data():
     url= "https://api.coinmarketcap.com/v1/ticker/" 
     resp = requests.get(url)
-    global coins
-    coins = simplejson.loads(resp.content)
-    return coins
+    data = simplejson.loads(resp.content)
+    return data
 
-def search_coins(coins,term):
-    lower = term.lower()
-    upper = term.upper()
+def search_coins(term):
+    keys_to_check = ['id', 'name', 'symbol']
     for coin in coins:
-        if coin["name"] == term:
-            global coin
-            return coin
-        elif coin["id"] == lower:
-            global coin
-            return coin
-        elif coin["symbol"] == upper:
-            global coin
-            return coin
-        elif coin['rank'] == "100":
-            global coin
-            coin = {}
-            return coin
+        for key in keys_to_check:
+            if coin.get(key, "").lower() == term.lower():
+                return coin
+    return coin # returns the last one
 
 
 
@@ -76,21 +57,11 @@ class MyHandler(ChompsHandler):
         
     def process_message(self, match, msg):
         term = match.groups()[0]
-        # pprint("last")
-        # pprint(last_check)
-        # pprint("Time Check") 
-        # pprint(time_check(last_check))
         if time_check(last_check):
-            global last_check
+            global coins, last_check
             last_check = datetime.now()
-            get_new_data()
-            search_coins(coins,term)
-            
-            pprint("New Coin")
-            pprint(coin)
-            last_check = datetime.now()
-            pprint(last_check)
-
+            coins = get_new_data()
+            coin = search_coins(term)
             holder = trend(coin["percent_change_1h"])
             holder_two = trend(coin["percent_change_24h"])
             holder_three = trend(coin["percent_change_7d"])
@@ -100,9 +71,7 @@ class MyHandler(ChompsHandler):
                 (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
                 (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))
         else:
-            search_coins(coins,term)
-            pprint(coin)
-            pprint("old coin")
+            coin= search_coins(term)
             holder = trend(coin["percent_change_1h"])
             holder_two = trend(coin["percent_change_24h"])
             holder_three = trend(coin["percent_change_7d"])
@@ -111,32 +80,5 @@ class MyHandler(ChompsHandler):
                 ("%s *%s%%* _1hr_ " % (holder,coin["percent_change_1h"]))+
                 (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
                 (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))
-
-
-
-if __name__ == "__main__":
-
-    namer = MyHandler(None, None, None)
-
-    tests = [
-        ("chomps marco",1),
-        ("chomps name", 0),
-        ("marco",0),
-    ]
-
-    for test in tests:
-        test_str = test[0]
-        matches = test[1]
-        print "Test: ", test_str
-
-        for m in namer.pattern.finditer(test_str):
-            matches -= 1
-            print "\tFound:"
-
-        if not matches:
-            print "\tPASSED"
-        else:
-            print "\tFALSE"
-
 
 
