@@ -58,7 +58,6 @@ class MyHandler(ChompsHandler):
     def process_message(self, match, msg):
         term = match.groups()[0]
         if time_check(last_check):
-            pprint("new coin")
             global coins, last_check
             last_check = datetime.now()
             coins = get_new_data()
@@ -72,7 +71,6 @@ class MyHandler(ChompsHandler):
                 (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
                 (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))
         else:
-            pprint("old coin")
             coin= search_coins(term)
             holder = trend(coin["percent_change_1h"])
             holder_two = trend(coin["percent_change_24h"])
