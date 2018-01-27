@@ -69,5 +69,5 @@ class MyHandler(ChompsHandler):
             ("$ %s \n" % coin["price_usd"]) +
             ("%s *%s%%* _1hr_ " % (holder,coin["percent_change_1h"]))+
             (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
-            (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))3
+            (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))
 
