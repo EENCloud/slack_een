@@ -23,26 +23,4 @@ class MyHandler(ChompsHandler):
         return "*POLO*"
 
 
-if __name__ == "__main__":
 
-    namer = MyHandler(None, None, None)
-
-    tests = [
-        ("chomps marco", 1),
-        ("chomps name", 0),
-        ("marco", 0),
-    ]
-
-    for test in tests:
-        test_str = test[0]
-        matches = test[1]
-        print "Test: ", test_str
-
-        for m in namer.pattern.finditer(test_str):
-            matches -= 1
-            print "\tFound:"
-
-        if not matches:
-            print "\tPASSED"
-        else:
-            print "\tFALSE"

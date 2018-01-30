@@ -49,7 +49,7 @@ def search_coins(term):
 
 
 
-class MyHandler(ChompsHandler):    
+class crypto(ChompsHandler):    
     @property
     def pattern(self):
         """This is called by the chomps engine to get the pattern for the function"""

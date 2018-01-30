@@ -50,6 +50,8 @@ muzzles= {}
 def simple_response(response, channel):
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
+def simple_topic_change(response,channel):
+    slack_client.api_call("channels.setTopic", channel=channel, topic=response)
 
 def muzzle_handler(msg, text):
     
@@ -111,8 +113,10 @@ if __name__ == "__main__":
                                             if count <= handler.call_limit:
                                                 #gevent.spawn(handle, handler, match, msg)
                                                 response = handler.process_message(match, msg)
-                                                if response:
-                                                    simple_response(response, msg['channel'])
+                                                if hasattr(handler, 'topic'):
+                                                    simple_topic_change(response, msg['channel'])
+                                                elif response:
+                                                    simple_response(response,msg['channel'])
                                             else:
                                                 break
 
