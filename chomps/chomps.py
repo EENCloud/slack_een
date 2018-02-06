@@ -111,11 +111,8 @@ if __name__ == "__main__":
                                         for match in handler.pattern.finditer(text):
                                             count += 1
                                             if count <= handler.call_limit:
-                                                #gevent.spawn(handle, handler, match, msg)
                                                 response = handler.process_message(match, msg)
-                                                if hasattr(handler, 'topic'):
-                                                    simple_topic_change(response, msg['channel'])
-                                                elif response:
+                                                if response:
                                                     simple_response(response,msg['channel'])
                                             else:
                                                 break

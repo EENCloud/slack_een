@@ -29,7 +29,7 @@ def trend(percent):
 
 def time_check(last_check):
     this_check = datetime.now()
-    data_age = (this_check - last_check).seconds / 60  # Age of data in minutes
+    data_age = (this_check - last_check).total_seconds() / 60  # Age of data in minutes
     pprint(data_age)
     return data_age >= CACHE_EXPIRATION
 
@@ -66,7 +66,7 @@ class crypto(ChompsHandler):
         holder_two = trend(coin["percent_change_24h"])
         holder_three = trend(coin["percent_change_7d"])
         return ((">>>*Currency*: %s \n" % coin["name"])+
-            ("$ %s \n" % coin["price_usd"]) +
+            ("$ %s | Symbol *%s*  \n" % (coin["price_usd"],coin["symbol"]))+ 
             ("%s *%s%%* _1hr_ " % (holder,coin["percent_change_1h"]))+
             (" %s *%s%%*  _1d_ " % (holder_two,coin["percent_change_24h"]))+
             (" %s *%s%%* _7d_ " %  (holder_three,coin["percent_change_7d"])))
