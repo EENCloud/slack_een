@@ -10,22 +10,21 @@ import datetime
 from googleapiclient.discovery import build
 from dateutil.relativedelta import relativedelta
 import gevent
-import settings
 
-from slackclient import SlackClient
+# from slackclient import SlackClient
 
-# @name of bot if you see @chomps online in your config put 'chomps' here
-BOT_NAME = settings.SLACK_BOT_NAME
+# # @name of bot if you see @chomps online in your config put 'chomps' here
+# BOT_NAME = settings.SLACK_BOT_NAME
 
-# Bot ID         **Note: do not publish this (we advise making this an ENV and populating this with os.environ.get(<ENV_NAME>, "")
-BOT_ID = settings.SLACK_BOT_ID
+# # Bot ID         **Note: do not publish this (we advise making this an ENV and populating this with os.environ.get(<ENV_NAME>, "")
+# BOT_ID = settings.SLACK_BOT_ID
 
-# Bot API Token  **Note: do not publish this (we advise making this an ENV and populating this with os.environ.get(<ENV_NAME>, "")
-SLACK_BOT_TOKEN = settings.SLACK_BOT_TOKEN
+# # Bot API Token  **Note: do not publish this (we advise making this an ENV and populating this with os.environ.get(<ENV_NAME>, "")
+# SLACK_BOT_TOKEN = settings.SLACK_BOT_TOKEN
 
-slack_client = SlackClient(SLACK_BOT_TOKEN)
+# slack_client = SlackClient(SLACK_BOT_TOKEN)
 
-READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
+# READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
 
 DEV_KEY = os.environ.get("EEN_GOOGLE_DEVELOPER_KEY", None)
 try:
@@ -59,7 +58,7 @@ USER_TRANSLATION = {
     'scott'   : 'scottdavison',
     'bj'      : 'bjblack',
     }
-
+count= 0
 
 def simple_topic_change(response,channel):
     slack_client.api_call("channels.setTopic", channel=channel, topic=response)
@@ -91,8 +90,9 @@ trigger = re.compile('(?:[Cc]homps) [Tt]opic ([\W|\w\s]+)')
 
 class CalendarBot(ChompsHandler):
     def __init__(self, client, bot_name, bot_id):
-        gevent.spawn_later(10,self.updateTopic)
-        super(CalendarBot, self).__init__(client, bot_name, bot_id) 
+        super(ChompsHandler, self).__init__()
+        pprint("start %s" % datetime.datetime.now()) 
+        gevent.spawn_later(1, self.updateTopic, client, count)
 
 
     @property
@@ -107,12 +107,11 @@ class CalendarBot(ChompsHandler):
         topic= get_user_on_support()
         return ' @{}'.format(USER_TRANSLATION.get(topic.lower()))
 
-    def updateTopic(nothing):
+    def updateTopic(self,client,count):
         topic= get_user_on_support()
         pprint(topic)
-        slack_client.api_call("channels.setTopic", channel="C8YJCQF19", topic=topic)
-        gevent.spawn_later(10, updateTopic())
-        
-
-
-
+        topic = datetime.datetime.now()
+        count+=1
+        pprint(count)
+        client.api_call("channels.setTopic", channel="C8YJCQF19", topic=topic)
+        gevent.spawn_later(10, self.updateTopic(client,count))
